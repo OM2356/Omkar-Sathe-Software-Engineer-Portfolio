@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en" class="dark scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Omkar Sathe — Aspiring Software Development Engineer</title>
+    <meta
+      name="description"
+      content="Portfolio of Omkar Sathe, T.Y. B.Sc. Computer Science student in Pune building AI-powered applications, browser automation, and full-stack software."
+    />
+    <meta name="author" content="Omkar Sathe" />
+    <meta
+      name="keywords"
+      content="Omkar Sathe, Software Development Engineer, Computer Science Portfolio, Pune, React, Python, Generative AI, Full-Stack Developer"
+    />
+
+    <!-- OpenGraph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Omkar Sathe" />
+    <meta property="og:title" content="Omkar Sathe — Aspiring Software Development Engineer" />
+    <meta
+      property="og:description"
+      content="Explore projects in AI, browser automation, and full-stack engineering by Omkar Sathe, T.Y. B.Sc. Computer Science student at Bharati Vidyapeeth, Pune."
+    />
+
+    <!-- Twitter / X -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Omkar Sathe — Aspiring Software Development Engineer" />
+    <meta
+      name="twitter:description"
+      content="Explore projects in AI, browser automation, and full-stack engineering by Omkar Sathe."
+    />
+
+    <!-- Typography: Outfit (Display), Plus Jakarta Sans (Body), JetBrains Mono (Code/Tabular) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Schema.org Structured Data -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Person",
+        "name": "Omkar Sathe",
+        "jobTitle": "Aspiring Software Development Engineer",
+        "description": "Third Year B.Sc. Computer Science student interested in Software Development, Artificial Intelligence, Machine Learning, and Full-Stack Engineering.",
+        "alumniOf": {
+          "@type": "CollegeOrUniversity",
+          "name": "Bharati Vidyapeeth (Deemed University), Yashwantrao Mohite College of Arts, Science & Commerce, Pune"
+        },
+        "knowsAbout": [
+          "Software Engineering",
+          "Full-Stack Development",
+          "Artificial Intelligence",
+          "Generative AI",
+          "Python",
+          "React",
+          "TypeScript",
+          "Node.js",
+          "PostgreSQL",
+          "Firebase"
+        ]
+      }
+    </script>
+
+    <!-- Prevent theme flash on load -->
+    <script>
+      (function () {
+        try {
+          var saved = localStorage.getItem('portfolio_theme');
+          if (saved === 'light') {
+            document.documentElement.classList.remove('dark');
+          } else {
+            document.documentElement.classList.add('dark');
+          }
+        } catch (e) {}
+      })();
+    </script>
+  </head>
+  <body class="bg-slate-50 text-slate-900 dark:bg-[#070B14] dark:text-slate-100 antialiased selection:bg-blue-500/25 selection:text-blue-200">
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

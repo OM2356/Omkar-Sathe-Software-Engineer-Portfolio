@@ -1,0 +1,229 @@
+{
+  "entities": {
+    "PortfolioProfile": {
+      "title": "PortfolioProfile",
+      "description": "Primary personal branding, biography, contact metadata, and social links for Omkar Sathe.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string", "minLength": 2, "maxLength": 100 },
+        "title": { "type": "string", "minLength": 2, "maxLength": 140 },
+        "headline": { "type": "string", "minLength": 5, "maxLength": 220 },
+        "educationSummary": { "type": "string", "maxLength": 200 },
+        "college": { "type": "string", "maxLength": 240 },
+        "careerGoal": { "type": "string", "maxLength": 240 },
+        "bio": { "type": "string", "maxLength": 2000 },
+        "aboutEducation": { "type": "string", "maxLength": 2000 },
+        "aboutInterests": { "type": "string", "maxLength": 2000 },
+        "aboutObjectives": { "type": "string", "maxLength": 2000 },
+        "aboutProblemSolving": { "type": "string", "maxLength": 2000 },
+        "aboutAiApproach": { "type": "string", "maxLength": 2000 },
+        "availabilityStatus": { "type": "string", "maxLength": 140 },
+        "location": { "type": "string", "maxLength": 120 },
+        "email": { "type": "string", "maxLength": 160 },
+        "githubUrl": { "type": "string", "maxLength": 300 },
+        "linkedinUrl": { "type": "string", "maxLength": 300 },
+        "githubUsername": { "type": "string", "maxLength": 80 },
+        "avatarUrl": { "type": "string", "maxLength": 2000 },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["name", "title", "headline", "bio", "availabilityStatus", "updatedAt"]
+    },
+    "Project": {
+      "title": "Project",
+      "description": "Software engineering or AI project showcased on the portfolio.",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string", "minLength": 2, "maxLength": 120 },
+        "slug": { "type": "string", "minLength": 2, "maxLength": 120, "pattern": "^[a-z0-9\\-]+$" },
+        "category": { "type": "string", "enum": ["AI & ML", "Full-Stack", "Automation", "Backend", "Frontend"] },
+        "summary": { "type": "string", "maxLength": 400 },
+        "description": { "type": "string", "maxLength": 3000 },
+        "features": { "type": "array", "description": "Up to 12 key project features" },
+        "technologies": { "type": "array", "description": "Up to 20 technologies used" },
+        "imageUrl": { "type": "string", "maxLength": 2000 },
+        "githubUrl": { "type": "string", "maxLength": 400 },
+        "liveUrl": { "type": "string", "maxLength": 400 },
+        "featured": { "type": "boolean" },
+        "sortOrder": { "type": "number" },
+        "status": { "type": "string", "maxLength": 80 },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["title", "slug", "category", "description", "features", "technologies", "featured", "sortOrder", "updatedAt"]
+    },
+    "Skill": {
+      "title": "Skill",
+      "description": "Technical skill organized by engineering domain without fabricated proficiency percentages.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string", "minLength": 1, "maxLength": 80 },
+        "category": {
+          "type": "string",
+          "enum": [
+            "Programming",
+            "Frontend",
+            "Backend",
+            "Database",
+            "AI and Machine Learning",
+            "Tools",
+            "Computer Science"
+          ]
+        },
+        "context": { "type": "string", "maxLength": 240 },
+        "sortOrder": { "type": "number" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["name", "category", "sortOrder", "updatedAt"]
+    },
+    "Experience": {
+      "title": "Experience",
+      "description": "Editable engineering experience, academic project leadership, automation testing, or internship record.",
+      "type": "object",
+      "properties": {
+        "role": { "type": "string", "minLength": 2, "maxLength": 140 },
+        "organization": { "type": "string", "minLength": 2, "maxLength": 180 },
+        "category": {
+          "type": "string",
+          "enum": ["Internship", "Software Development", "AI Engineering", "Automation Testing", "Hackathons & Events"]
+        },
+        "period": { "type": "string", "maxLength": 80 },
+        "location": { "type": "string", "maxLength": 120 },
+        "description": { "type": "string", "maxLength": 2000 },
+        "highlights": { "type": "array", "description": "Up to 10 key responsibilities or outcomes" },
+        "verifiedStatus": { "type": "string", "maxLength": 100 },
+        "sortOrder": { "type": "number" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["role", "organization", "category", "period", "description", "highlights", "verifiedStatus", "sortOrder", "updatedAt"]
+    },
+    "Education": {
+      "title": "Education",
+      "description": "Academic timeline entry.",
+      "type": "object",
+      "properties": {
+        "degree": { "type": "string", "minLength": 2, "maxLength": 160 },
+        "yearLabel": { "type": "string", "maxLength": 80 },
+        "institution": { "type": "string", "minLength": 2, "maxLength": 240 },
+        "period": { "type": "string", "maxLength": 80 },
+        "location": { "type": "string", "maxLength": 120 },
+        "description": { "type": "string", "maxLength": 1500 },
+        "coursework": { "type": "array", "description": "Up to 15 core coursework subjects" },
+        "sortOrder": { "type": "number" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["degree", "institution", "period", "description", "coursework", "sortOrder", "updatedAt"]
+    },
+    "Certification": {
+      "title": "Certification",
+      "description": "Certification gallery item with optional uploaded PDF or image proof.",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string", "minLength": 2, "maxLength": 160 },
+        "issuer": { "type": "string", "minLength": 2, "maxLength": 160 },
+        "issueDate": { "type": "string", "maxLength": 80 },
+        "credentialUrl": { "type": "string", "maxLength": 400 },
+        "certificateFileUrl": { "type": "string", "maxLength": 2000 },
+        "certificateFileName": { "type": "string", "maxLength": 200 },
+        "certificateFileType": { "type": "string", "maxLength": 80 },
+        "description": { "type": "string", "maxLength": 1500 },
+        "sortOrder": { "type": "number" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["title", "issuer", "issueDate", "description", "sortOrder", "updatedAt"]
+    },
+    "Achievement": {
+      "title": "Achievement",
+      "description": "Leadership, athletics, chess, hackathon, or technical accomplishment.",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string", "minLength": 2, "maxLength": 160 },
+        "category": { "type": "string", "enum": ["Leadership", "Sports", "Strategy & Chess", "Hackathon", "Technical"] },
+        "period": { "type": "string", "maxLength": 80 },
+        "description": { "type": "string", "maxLength": 1500 },
+        "sortOrder": { "type": "number" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["title", "category", "period", "description", "sortOrder", "updatedAt"]
+    },
+    "ResumeMeta": {
+      "title": "ResumeMeta",
+      "description": "Metadata and download URL for the uploaded PDF resume.",
+      "type": "object",
+      "properties": {
+        "fileName": { "type": "string", "maxLength": 200 },
+        "fileUrl": { "type": "string", "maxLength": 2000 },
+        "mimeType": { "type": "string", "maxLength": 100 },
+        "fileSizeBytes": { "type": "number" },
+        "summaryNote": { "type": "string", "maxLength": 500 },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["fileName", "fileUrl", "updatedAt"]
+    },
+    "ContactMessage": {
+      "title": "ContactMessage",
+      "description": "Inbound contact submission from portfolio visitors/recruiters (PII protected to admins only).",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string", "minLength": 2, "maxLength": 120 },
+        "email": { "type": "string", "minLength": 5, "maxLength": 160 },
+        "subject": { "type": "string", "minLength": 2, "maxLength": 200 },
+        "message": { "type": "string", "minLength": 10, "maxLength": 4000 },
+        "status": { "type": "string", "enum": ["unread", "read", "replied"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["name", "email", "subject", "message", "status", "createdAt"]
+    },
+    "AdminUser": {
+      "title": "AdminUser",
+      "description": "Authorized portfolio administrator record.",
+      "type": "object",
+      "properties": {
+        "email": { "type": "string", "maxLength": 160 },
+        "role": { "type": "string", "enum": ["admin"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["email", "role", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/portfolio_profile/{profileId}": {
+      "schema": { "$ref": "#/entities/PortfolioProfile" },
+      "description": "Publicly readable portfolio profile document ('main'), writable only by verified admin."
+    },
+    "/projects/{projectId}": {
+      "schema": { "$ref": "#/entities/Project" },
+      "description": "Publicly readable project portfolio entries, writable only by verified admin."
+    },
+    "/skills/{skillId}": {
+      "schema": { "$ref": "#/entities/Skill" },
+      "description": "Publicly readable technical skills, writable only by verified admin."
+    },
+    "/experiences/{expId}": {
+      "schema": { "$ref": "#/entities/Experience" },
+      "description": "Publicly readable experience timeline items, writable only by verified admin."
+    },
+    "/education/{eduId}": {
+      "schema": { "$ref": "#/entities/Education" },
+      "description": "Publicly readable academic education entries, writable only by verified admin."
+    },
+    "/certifications/{certId}": {
+      "schema": { "$ref": "#/entities/Certification" },
+      "description": "Publicly readable certifications gallery, writable only by verified admin."
+    },
+    "/achievements/{achId}": {
+      "schema": { "$ref": "#/entities/Achievement" },
+      "description": "Publicly readable achievements and leadership roles, writable only by verified admin."
+    },
+    "/resume_meta/{resumeId}": {
+      "schema": { "$ref": "#/entities/ResumeMeta" },
+      "description": "Publicly readable uploaded resume metadata ('main'), writable only by verified admin."
+    },
+    "/contact_messages/{messageId}": {
+      "schema": { "$ref": "#/entities/ContactMessage" },
+      "description": "Public create for visitor contact inquiries with strict validation; read/update/delete restricted strictly to verified admin."
+    },
+    "/admins/{uid}": {
+      "schema": { "$ref": "#/entities/AdminUser" },
+      "description": "Admin role records, readable by self/admin and writable only by bootstrapped admin."
+    }
+  }
+}

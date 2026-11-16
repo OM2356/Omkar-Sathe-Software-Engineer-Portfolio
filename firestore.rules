@@ -1,0 +1,342 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() >= 1 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isVerifiedUser() {
+      return isSignedIn() && request.auth.token.email_verified == true;
+    }
+
+    function isBootstrappedAdmin() {
+      return isVerifiedUser() && request.auth.token.email == 'omkarsathe3103@gmail.com';
+    }
+
+    function isAdmin() {
+      return isBootstrappedAdmin() ||
+        (isVerifiedUser() && exists(/databases/$(database)/documents/admins/$(request.auth.uid)));
+    }
+
+    function isStringList(arr, maxLen) {
+      return arr is list && arr.size() <= maxLen && (arr.size() == 0 || arr[0] is string);
+    }
+
+    function isOptionalString(data, key, maxLen) {
+      return !(key in data) || (data[key] is string && data[key].size() <= maxLen);
+    }
+
+    function isValidProfile(data) {
+      return data.keys().hasAll(['name', 'title', 'headline', 'bio', 'availabilityStatus', 'updatedAt'])
+        && data.keys().hasOnly([
+          'name', 'title', 'headline', 'educationSummary', 'college', 'careerGoal',
+          'bio', 'aboutEducation', 'aboutInterests', 'aboutObjectives',
+          'aboutProblemSolving', 'aboutAiApproach', 'availabilityStatus',
+          'location', 'email', 'githubUrl', 'linkedinUrl', 'githubUsername',
+          'avatarUrl', 'updatedAt'
+        ])
+        && data.name is string && data.name.size() >= 2 && data.name.size() <= 100
+        && data.title is string && data.title.size() >= 2 && data.title.size() <= 140
+        && data.headline is string && data.headline.size() >= 5 && data.headline.size() <= 220
+        && data.bio is string && data.bio.size() <= 2000
+        && data.availabilityStatus is string && data.availabilityStatus.size() <= 140
+        && isOptionalString(data, 'educationSummary', 200)
+        && isOptionalString(data, 'college', 240)
+        && isOptionalString(data, 'careerGoal', 240)
+        && isOptionalString(data, 'aboutEducation', 2000)
+        && isOptionalString(data, 'aboutInterests', 2000)
+        && isOptionalString(data, 'aboutObjectives', 2000)
+        && isOptionalString(data, 'aboutProblemSolving', 2000)
+        && isOptionalString(data, 'aboutAiApproach', 2000)
+        && isOptionalString(data, 'location', 120)
+        && isOptionalString(data, 'email', 160)
+        && isOptionalString(data, 'githubUrl', 300)
+        && isOptionalString(data, 'linkedinUrl', 300)
+        && isOptionalString(data, 'githubUsername', 80)
+        && isOptionalString(data, 'avatarUrl', 2000)
+        && data.updatedAt == request.time;
+    }
+
+    function isValidProject(data) {
+      return data.keys().hasAll([
+          'title', 'slug', 'category', 'description', 'features',
+          'technologies', 'featured', 'sortOrder', 'updatedAt'
+        ])
+        && data.keys().hasOnly([
+          'title', 'slug', 'category', 'summary', 'description', 'features',
+          'technologies', 'imageUrl', 'githubUrl', 'liveUrl', 'featured',
+          'sortOrder', 'status', 'updatedAt'
+        ])
+        && data.title is string && data.title.size() >= 2 && data.title.size() <= 120
+        && data.slug is string && data.slug.size() >= 2 && data.slug.size() <= 120 && data.slug.matches('^[a-z0-9\\-]+$')
+        && data.category in ['AI & ML', 'Full-Stack', 'Automation', 'Backend', 'Frontend']
+        && isOptionalString(data, 'summary', 400)
+        && data.description is string && data.description.size() <= 3000
+        && isStringList(data.features, 12)
+        && isStringList(data.technologies, 20)
+        && isOptionalString(data, 'imageUrl', 2000)
+        && isOptionalString(data, 'githubUrl', 400)
+        && isOptionalString(data, 'liveUrl', 400)
+        && data.featured is bool
+        && data.sortOrder is number
+        && isOptionalString(data, 'status', 80)
+        && data.updatedAt == request.time;
+    }
+
+    function isValidSkill(data) {
+      return data.keys().hasAll(['name', 'category', 'sortOrder', 'updatedAt'])
+        && data.keys().hasOnly(['name', 'category', 'context', 'sortOrder', 'updatedAt'])
+        && data.name is string && data.name.size() >= 1 && data.name.size() <= 80
+        && data.category in [
+          'Programming', 'Frontend', 'Backend', 'Database',
+          'AI and Machine Learning', 'Tools', 'Computer Science'
+        ]
+        && isOptionalString(data, 'context', 240)
+        && data.sortOrder is number
+        && data.updatedAt == request.time;
+    }
+
+    function isValidExperience(data) {
+      return data.keys().hasAll([
+          'role', 'organization', 'category', 'period', 'description',
+          'highlights', 'verifiedStatus', 'sortOrder', 'updatedAt'
+        ])
+        && data.keys().hasOnly([
+          'role', 'organization', 'category', 'period', 'location',
+          'description', 'highlights', 'verifiedStatus', 'sortOrder', 'updatedAt'
+        ])
+        && data.role is string && data.role.size() >= 2 && data.role.size() <= 140
+        && data.organization is string && data.organization.size() >= 2 && data.organization.size() <= 180
+        && data.category in [
+          'Internship', 'Software Development', 'AI Engineering',
+          'Automation Testing', 'Hackathons & Events'
+        ]
+        && data.period is string && data.period.size() <= 80
+        && isOptionalString(data, 'location', 120)
+        && data.description is string && data.description.size() <= 2000
+        && isStringList(data.highlights, 10)
+        && data.verifiedStatus is string && data.verifiedStatus.size() <= 100
+        && data.sortOrder is number
+        && data.updatedAt == request.time;
+    }
+
+    function isValidEducation(data) {
+      return data.keys().hasAll([
+          'degree', 'institution', 'period', 'description',
+          'coursework', 'sortOrder', 'updatedAt'
+        ])
+        && data.keys().hasOnly([
+          'degree', 'yearLabel', 'institution', 'period', 'location',
+          'description', 'coursework', 'sortOrder', 'updatedAt'
+        ])
+        && data.degree is string && data.degree.size() >= 2 && data.degree.size() <= 160
+        && isOptionalString(data, 'yearLabel', 80)
+        && data.institution is string && data.institution.size() >= 2 && data.institution.size() <= 240
+        && data.period is string && data.period.size() <= 80
+        && isOptionalString(data, 'location', 120)
+        && data.description is string && data.description.size() <= 1500
+        && isStringList(data.coursework, 15)
+        && data.sortOrder is number
+        && data.updatedAt == request.time;
+    }
+
+    function isValidCertification(data) {
+      return data.keys().hasAll(['title', 'issuer', 'issueDate', 'description', 'sortOrder', 'updatedAt'])
+        && data.keys().hasOnly([
+          'title', 'issuer', 'issueDate', 'credentialUrl', 'certificateFileUrl',
+          'certificateFileName', 'certificateFileType', 'description', 'sortOrder', 'updatedAt'
+        ])
+        && data.title is string && data.title.size() >= 2 && data.title.size() <= 160
+        && data.issuer is string && data.issuer.size() >= 2 && data.issuer.size() <= 160
+        && data.issueDate is string && data.issueDate.size() <= 80
+        && isOptionalString(data, 'credentialUrl', 400)
+        && isOptionalString(data, 'certificateFileUrl', 2000)
+        && isOptionalString(data, 'certificateFileName', 200)
+        && isOptionalString(data, 'certificateFileType', 80)
+        && data.description is string && data.description.size() <= 1500
+        && data.sortOrder is number
+        && data.updatedAt == request.time;
+    }
+
+    function isValidAchievement(data) {
+      return data.keys().hasAll(['title', 'category', 'period', 'description', 'sortOrder', 'updatedAt'])
+        && data.keys().hasOnly(['title', 'category', 'period', 'description', 'sortOrder', 'updatedAt'])
+        && data.title is string && data.title.size() >= 2 && data.title.size() <= 160
+        && data.category in ['Leadership', 'Sports', 'Strategy & Chess', 'Hackathon', 'Technical']
+        && data.period is string && data.period.size() <= 80
+        && data.description is string && data.description.size() <= 1500
+        && data.sortOrder is number
+        && data.updatedAt == request.time;
+    }
+
+    function isValidResumeMeta(data) {
+      return data.keys().hasAll(['fileName', 'fileUrl', 'updatedAt'])
+        && data.keys().hasOnly(['fileName', 'fileUrl', 'mimeType', 'fileSizeBytes', 'summaryNote', 'updatedAt'])
+        && data.fileName is string && data.fileName.size() <= 200
+        && data.fileUrl is string && data.fileUrl.size() <= 2000
+        && isOptionalString(data, 'mimeType', 100)
+        && (!('fileSizeBytes' in data) || data.fileSizeBytes is number)
+        && isOptionalString(data, 'summaryNote', 500)
+        && data.updatedAt == request.time;
+    }
+
+    function isValidContactMessageCreate(data) {
+      return data.keys().hasAll(['name', 'email', 'subject', 'message', 'status', 'createdAt'])
+        && data.keys().hasOnly(['name', 'email', 'subject', 'message', 'status', 'createdAt'])
+        && data.name is string && data.name.size() >= 2 && data.name.size() <= 120
+        && data.email is string && data.email.size() >= 5 && data.email.size() <= 160
+        && data.email.matches('^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$')
+        && data.subject is string && data.subject.size() >= 2 && data.subject.size() <= 200
+        && data.message is string && data.message.size() >= 10 && data.message.size() <= 4000
+        && data.status == 'unread'
+        && data.createdAt == request.time;
+    }
+
+    function isValidContactMessageUpdate(data) {
+      return data.keys().hasAll(['name', 'email', 'subject', 'message', 'status', 'createdAt'])
+        && data.keys().hasOnly(['name', 'email', 'subject', 'message', 'status', 'createdAt'])
+        && data.status in ['unread', 'read', 'replied']
+        && data.name == existing().name
+        && data.email == existing().email
+        && data.subject == existing().subject
+        && data.message == existing().message
+        && data.createdAt == existing().createdAt;
+    }
+
+    function isValidAdminUser(data) {
+      return data.keys().hasAll(['email', 'role', 'createdAt'])
+        && data.keys().hasOnly(['email', 'role', 'createdAt'])
+        && data.email is string && data.email.size() <= 160
+        && data.role == 'admin'
+        && data.createdAt == request.time;
+    }
+
+    match /portfolio_profile/{profileId} {
+      allow get: if isValidId(profileId);
+      allow list: if true;
+      allow create: if isValidId(profileId) && isAdmin() && isValidProfile(incoming());
+      allow update: if isValidId(profileId) && isAdmin() && isValidProfile(incoming())
+        && incoming().diff(existing()).affectedKeys().hasOnly([
+          'name', 'title', 'headline', 'educationSummary', 'college', 'careerGoal',
+          'bio', 'aboutEducation', 'aboutInterests', 'aboutObjectives',
+          'aboutProblemSolving', 'aboutAiApproach', 'availabilityStatus',
+          'location', 'email', 'githubUrl', 'linkedinUrl', 'githubUsername',
+          'avatarUrl', 'updatedAt'
+        ]);
+      allow delete: if isValidId(profileId) && isAdmin();
+    }
+
+    match /projects/{projectId} {
+      allow get: if isValidId(projectId);
+      allow list: if true;
+      allow create: if isValidId(projectId) && isAdmin() && isValidProject(incoming());
+      allow update: if isValidId(projectId) && isAdmin() && isValidProject(incoming())
+        && incoming().diff(existing()).affectedKeys().hasOnly([
+          'title', 'slug', 'category', 'summary', 'description', 'features',
+          'technologies', 'imageUrl', 'githubUrl', 'liveUrl', 'featured',
+          'sortOrder', 'status', 'updatedAt'
+        ]);
+      allow delete: if isValidId(projectId) && isAdmin();
+    }
+
+    match /skills/{skillId} {
+      allow get: if isValidId(skillId);
+      allow list: if true;
+      allow create: if isValidId(skillId) && isAdmin() && isValidSkill(incoming());
+      allow update: if isValidId(skillId) && isAdmin() && isValidSkill(incoming())
+        && incoming().diff(existing()).affectedKeys().hasOnly(['name', 'category', 'context', 'sortOrder', 'updatedAt']);
+      allow delete: if isValidId(skillId) && isAdmin();
+    }
+
+    match /experiences/{expId} {
+      allow get: if isValidId(expId);
+      allow list: if true;
+      allow create: if isValidId(expId) && isAdmin() && isValidExperience(incoming());
+      allow update: if isValidId(expId) && isAdmin() && isValidExperience(incoming())
+        && incoming().diff(existing()).affectedKeys().hasOnly([
+          'role', 'organization', 'category', 'period', 'location',
+          'description', 'highlights', 'verifiedStatus', 'sortOrder', 'updatedAt'
+        ]);
+      allow delete: if isValidId(expId) && isAdmin();
+    }
+
+    match /education/{eduId} {
+      allow get: if isValidId(eduId);
+      allow list: if true;
+      allow create: if isValidId(eduId) && isAdmin() && isValidEducation(incoming());
+      allow update: if isValidId(eduId) && isAdmin() && isValidEducation(incoming())
+        && incoming().diff(existing()).affectedKeys().hasOnly([
+          'degree', 'yearLabel', 'institution', 'period', 'location',
+          'description', 'coursework', 'sortOrder', 'updatedAt'
+        ]);
+      allow delete: if isValidId(eduId) && isAdmin();
+    }
+
+    match /certifications/{certId} {
+      allow get: if isValidId(certId);
+      allow list: if true;
+      allow create: if isValidId(certId) && isAdmin() && isValidCertification(incoming());
+      allow update: if isValidId(certId) && isAdmin() && isValidCertification(incoming())
+        && incoming().diff(existing()).affectedKeys().hasOnly([
+          'title', 'issuer', 'issueDate', 'credentialUrl', 'certificateFileUrl',
+          'certificateFileName', 'certificateFileType', 'description', 'sortOrder', 'updatedAt'
+        ]);
+      allow delete: if isValidId(certId) && isAdmin();
+    }
+
+    match /achievements/{achId} {
+      allow get: if isValidId(achId);
+      allow list: if true;
+      allow create: if isValidId(achId) && isAdmin() && isValidAchievement(incoming());
+      allow update: if isValidId(achId) && isAdmin() && isValidAchievement(incoming())
+        && incoming().diff(existing()).affectedKeys().hasOnly([
+          'title', 'category', 'period', 'description', 'sortOrder', 'updatedAt'
+        ]);
+      allow delete: if isValidId(achId) && isAdmin();
+    }
+
+    match /resume_meta/{resumeId} {
+      allow get: if isValidId(resumeId);
+      allow list: if true;
+      allow create: if isValidId(resumeId) && isAdmin() && isValidResumeMeta(incoming());
+      allow update: if isValidId(resumeId) && isAdmin() && isValidResumeMeta(incoming())
+        && incoming().diff(existing()).affectedKeys().hasOnly([
+          'fileName', 'fileUrl', 'mimeType', 'fileSizeBytes', 'summaryNote', 'updatedAt'
+        ]);
+      allow delete: if isValidId(resumeId) && isAdmin();
+    }
+
+    match /contact_messages/{messageId} {
+      allow get: if isValidId(messageId) && isAdmin();
+      allow list: if isBootstrappedAdmin();
+      allow create: if isValidId(messageId) && isValidContactMessageCreate(incoming());
+      allow update: if isValidId(messageId) && isAdmin() && isValidContactMessageUpdate(incoming())
+        && incoming().diff(existing()).affectedKeys().hasOnly(['status']);
+      allow delete: if isValidId(messageId) && isAdmin();
+    }
+
+    match /admins/{uid} {
+      allow get: if isValidId(uid) && isVerifiedUser() && (request.auth.uid == uid || isBootstrappedAdmin());
+      allow list: if isBootstrappedAdmin();
+      allow create: if isValidId(uid) && isBootstrappedAdmin() && isValidAdminUser(incoming());
+      allow update: if false;
+      allow delete: if isValidId(uid) && isBootstrappedAdmin();
+    }
+  }
+}
